@@ -1,0 +1,10 @@
+Norse mythology family tree in Prolog
+---------------------------------------------
+1. Thor's descendants are [magni,modi]
+2. Loki's parents are [giants]
+3. Vidor's father is odin
+4. Forseti's aunts and uncles are [bragi,heimdall,hermod,hoder,njord,thor,tyr,vidor]
+5. Freya's ancestors are [njord,skadi,odin,frigg,bor,bestia,burl,audhumia,giants,ymir]
+6. Does Fenris descend from Bor? []
+7. All pairs of second cousins are [ (vidor,charles), (thor,charles), (balder,charles), (hoder,charles), (njord,charles), (hermod,charles), (bragi,charles), (tyr,charles), (heimdall,charles), (charles,vidor), (charles,thor), (charles,balder), (charles,hoder), (charles,njord), (charles,hermod), (charles,bragi), (charles,tyr), (charles,heimdall)]
+8. All pairs of first cousins once removed are [ (fenris,balder), (fenris,bragi), (fenris,heimdall), (fenris,hermod), (fenris,hoder), (fenris,njord), (fenris,thor), (fenris,tyr), (fenris,vidor), (hel,balder), (hel,bragi), (hel,heimdall), (hel,hermod), (hel,hoder), (hel,njord), (hel,thor), (hel,tyr), (hel,vidor), (midgard_serpent,balder), (midgard_serpent,bragi), (midgard_serpent,heimdall), (midgard_serpent,hermod), (midgard_serpent,hoder), (midgard_serpent,njord), (midgard_serpent,thor), (midgard_serpent,tyr), (midgard_serpent,vidor), (narvi,balder), (narvi,bragi), (narvi,heimdall), (narvi,hermod), (narvi,hoder), (narvi,njord), (narvi,thor), (narvi,tyr), (narvi,vidor), (odin,charles), (vali,balder), (vali,bragi), (vali,heimdall), (vali,hermod), (vali,hoder), (vali,njord), (vali,thor), (vali,tyr), (vali,vidor), (ve,charles), (vili,charles)]
