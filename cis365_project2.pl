@@ -3,7 +3,8 @@
 *Dr. Jonathan Leidig
 *Project 2
 *
-*Project Description - Convert the set of familial characters in Norse or Greek* mythology to Prolog facts. Then create rules and goals as needed to answer the following questions:
+*Project Description - Convert the set of familial characters in Norse mythology to
+*Prolog facts. Then create rules and goals as needed to answer the following questions:
 *
 *1. List all of Thor’s descendants.
 *2. Who is/are Loki’s parents?
@@ -93,7 +94,7 @@ father(X, Y) :- parent(X,Y), male(X).
 /* X and Y are second-cousins if they share a great grandparent, but are not siblings or first cousins */
 second_cousins(X, Y) :- parent(A, X), parent(B, A), parent(C, B), parent(D, Y),
 	parent(E, D), parent(C, E), \+(X = Y), \+(siblings(X,Y)), \+(cousins(X,Y)).
-/* Y is the first cousin once removed of X if Y is the child X's cousin */
+/* X is the first cousin once removed of Y if Y is the child of X's cousin */
 fc_once_removed(X, Y) :- cousins(X, A), parent(A, Y).
 
 /* ----- Rules to find sets ----- */
