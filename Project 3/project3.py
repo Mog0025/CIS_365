@@ -61,8 +61,12 @@ class RockPaperScissors:
         if self.userInput == 4:
             return
 
-        # Examine historical data
-        self.readHistory()
+        try:
+            # Examine historical data
+            self.readHistory()
+        except Exception:
+            self.userInput = 4
+            print("The file you indicated cannot be read. Please try again.")
 
         # Play randomly on the first turn against a new player
         if len(self.history) == 0:
@@ -70,18 +74,24 @@ class RockPaperScissors:
 
         # Otherwise try each strategy to see which is most likely to win
         else:
-            strategyA = self.tryFrequency()
-            strategyB = self.tryRandom()
-            print("Strategy Random: ", strategyB)
-            print("Strategy Freq:", strategyA)
+            freq = self.tryFrequency()
+            stepAhead = self.tryStepAhead()
+            rand = self.tryRandom()
+
+            print("Strategy Freq:", freq)
+            print("Strategy Step Ahead:", stepAhead)
+            print("Strategy Random: ", rand)
 
             # See which strategy was best and use it
-            if strategyA < strategyB:
-                self.myPlay = self.randomPlay()
-                print("Playing Random")
-            else:
+            if freq > max(stepAhead, rand):
                 self.myPlay = self.frequencyPlay()
                 print("Playing Frequency")
+            elif stepAhead > max(freq, rand):
+                self.myPlay = self.stepAheadPlay(self.history[-1])
+                print("Playing Step Ahead")
+            else:
+                self.myPlay = self.randomPlay()
+                print("Playing Random")
 
     ##############################################################
     # Reads text file to see how user played in the past
@@ -101,9 +111,9 @@ class RockPaperScissors:
         wins = 0
         numGames = len(self.history)
         for entry in self.history:
-            self.myPlay = self.randomPlay()
-            self.userInput = int(entry)
-            self.decideWinner(self.userInput, self.myPlay)
+            ai = self.randomPlay()
+            user = int(entry)
+            self.decideWinner(user, ai)
             if self.winner == "me! I'm good at this.":
                 wins += 1
         winRate = wins/numGames
@@ -117,9 +127,27 @@ class RockPaperScissors:
         wins = 0
         numGames = len(self.history)
         for entry in self.history:
-            self.myPlay = self.frequencyPlay()
-            self.userInput = int(entry)
-            self.decideWinner(self.userInput, self.myPlay)
+            ai = self.frequencyPlay()
+            user = int(entry)
+            self.decideWinner(user, ai)
+            if self.winner == "me! I'm good at this.":
+                wins += 1
+        winRate = wins/numGames
+        return winRate
+
+    ##############################################################
+    # Plays against historical data using step ahead plays to
+    # determine the win rate of such a strategy
+    ##############################################################
+    def tryStepAhead(self):
+        wins = 0
+        numGames = len(self.history)
+        lastUserPlay = 3  # First play will therefore be scissors
+        for entry in self.history:
+            ai = self.stepAheadPlay(lastUserPlay)
+            user = int(entry)
+            lastUserPlay = int(entry)
+            self.decideWinner(user, ai)
             if self.winner == "me! I'm good at this.":
                 wins += 1
         winRate = wins/numGames
@@ -197,6 +225,20 @@ class RockPaperScissors:
             return 1  # play rock to beat scissors
 
     ##########################################################
+    # Generates play based on the idea that a player who just
+    # lost will often subconsciously pick the throw that
+    # beats their last one
+    ##########################################################
+    def stepAheadPlay(self, lastUserPlay):
+        if lastUserPlay == 1:
+            return 3  # Play scissors because user likely to play paper
+        elif lastUserPlay == 2:
+            return 1  # Play rock because user likely to play scissors
+        else:
+            return 2  # Play paper because user likely to play rock
+
+
+    ##########################################################
     # Plays Rock, Paper, Scissors until user chooses to exit
     ##########################################################
     def playGame(self):
@@ -205,8 +247,8 @@ class RockPaperScissors:
                   " as the first argument.")
             return
         while self.userInput != 4:
-            self.getInput()
             self.choosePlay()
+            self.getInput()
             self.declarePlay()
             self.decideWinner(self.userInput, self.myPlay)
             self.declareWinner()
