@@ -4,8 +4,8 @@
 #
 # Rock, Paper, Scissors learning AI
 # - This program plays games of rock, paper, scissors with the user
-# - and keeps track of the player's choices, attempting to develop a
-# - strategy that will anticipate the player's behavior
+# - and keeps track of the player's choices, attempting to anticipate
+# - and counter the player's behavior
 #
 # @author Joel Truman & Laura Young
 # @version Winter 2016
@@ -18,7 +18,7 @@ class RockPaperScissors:
 
     # Instance variables
     def __init__(self):
-        print("Welcome Rock, Paper, Scissors bot. I learn from how you play!")
+        print("Welcome to Rock, Paper, Scissors bot. I learn from how you play!")
         self.userInput = 0  # User choice
         self.myPlay = 0  # AI player choice
         self.winner = "Parker Lewis"  # Winner of the game
@@ -77,18 +77,25 @@ class RockPaperScissors:
             freq = self.tryFrequency()
             stepAhead = self.tryStepAhead()
             rand = self.tryRandom()
+            pattern = self.tryPattern()
+            patternChance = float(pattern[1])
+            patternPlay = int(pattern[0])
 
             print("Strategy Freq:", freq)
             print("Strategy Step Ahead:", stepAhead)
-            print("Strategy Random: ", rand)
+            print("Strategy Random:", rand)
+            print("Strategy Pattern:", patternChance)
 
             # See which strategy was best and use it
-            if freq > max(stepAhead, rand):
+            if freq >= max(stepAhead, rand, patternChance):
                 self.myPlay = self.frequencyPlay()
                 print("Playing Frequency")
-            elif stepAhead > max(freq, rand):
+            elif stepAhead >= max(freq, rand, patternChance):
                 self.myPlay = self.stepAheadPlay(self.history[-1])
                 print("Playing Step Ahead")
+            elif patternChance >= max(freq, stepAhead, rand):
+                self.myPlay = patternPlay
+                print("Playing Pattern")
             else:
                 self.myPlay = self.randomPlay()
                 print("Playing Random")
@@ -152,6 +159,67 @@ class RockPaperScissors:
                 wins += 1
         winRate = wins/numGames
         return winRate
+
+    ##########################################################
+    # Generates play based on examining player's last 3 moves
+    # to see if they historically play predictable patterns
+    ##########################################################
+    def tryPattern(self):
+
+        # do not try if there is not enough data to examine yet
+        if len(self.history) < 4:
+            return [1, 0]
+
+        else:
+
+            # create a new list that holds the last 3 plays
+            lastThree = []
+            lastThree.append(self.history[-3])
+            lastThree.append(self.history[-2])
+            lastThree.append(self.history[-1])
+
+            # find all indices in history that come after the
+            # observed pattern
+            nextMoveLocations = []
+            for index in (i for i,e in enumerate(self.history) if e == lastThree[0]):
+                if self.history[index:index+3] == lastThree:
+                        nextMoveLocations.append(index+3)
+
+
+            playRock = 0
+            playPaper = 0
+            playScissors = 0
+
+            # figure out which plays the opponent most commonly makes
+            # directly after the observed pattern
+            for i in nextMoveLocations:
+                try:
+                    entry = self.history[i]
+                    if int(entry) == 1:
+                        playPaper += 1
+                    elif int(entry) == 2:
+                        playScissors += 1
+                    else:
+                        playRock += 1
+                except IndexError:
+                    pass
+
+            # if there were few pattern matches this strategy is likely bad
+            numMatches = len(nextMoveLocations) - 1
+            if ((numMatches * 3)/len(self.history)) < 0.1:
+                return [1, 0]
+
+            # if there were pattern matches the strategy might be good
+            else:
+                # return the weapon that is most likely to beat the pattern
+                # and how likely it is to work
+                if playRock > max(playPaper, playScissors):
+                    return [1, (playRock/numMatches)]
+                elif playPaper > max(playRock, playScissors):
+                    return [2, (playPaper/numMatches)]
+                else:
+                    return [3, (playScissors/numMatches)]
+
 
     ##############################################################
     # Prints the AI's choice of play to the screen
@@ -236,7 +304,6 @@ class RockPaperScissors:
             return 1  # Play rock because user likely to play scissors
         else:
             return 2  # Play paper because user likely to play rock
-
 
     ##########################################################
     # Plays Rock, Paper, Scissors until user chooses to exit
